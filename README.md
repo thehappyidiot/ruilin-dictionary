@@ -39,7 +39,7 @@ Self-hosted Go + Postgres web app for managing a personal dictionary.
    ```
 
    Run this from the repo root and do not use `sudo`.
-   This uses Goose migration tracking and applies only `-- +goose Up` sections.
+   This runs Goose in a one-off Docker container and applies only `-- +goose Up` sections.
 
 6. Verify health:
 
@@ -68,4 +68,5 @@ This rebuilds/restarts the app container while preserving Postgres data in the n
 
 - Do not pipe migration files directly into `psql` if they contain Goose markers.
 - `psql` treats `-- +goose Up/Down` as comments and executes all SQL, including down migrations.
-- `./apply_schema.sh` runs Goose properly and records versions in the migration table.
+- `./apply_schema.sh` runs `docker compose run --rm migrate`, so no host `go`/`goose` install is needed.
+- Goose records applied versions in its migration table, so reruns are safe.
