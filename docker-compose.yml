@@ -15,27 +15,6 @@ services:
       retries: 5
       start_period: 10s
 
-  migrate:
-    image: golang:1.25-alpine
-    working_dir: /workspace
-    volumes:
-      - ./:/workspace
-    env_file:
-      - .env
-    environment:
-      GOOSE_DRIVER: ${GOOSE_DRIVER:-postgres}
-      GOOSE_MIGRATION_DIR: ${GOOSE_MIGRATION_DIR:-./sql/schema}
-      GOOSE_DBSTRING: postgres://${POSTGRES_USER:-ruilin_user}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-ruilin_dictionary}?sslmode=disable
-    depends_on:
-      db:
-        condition: service_healthy
-    command:
-      - sh
-      - -c
-      - >
-        go run github.com/pressly/goose/v3/cmd/goose@latest
-        -dir "$GOOSE_MIGRATION_DIR" "$GOOSE_DRIVER" "$GOOSE_DBSTRING" up
-
   app:
     build:
       context: .

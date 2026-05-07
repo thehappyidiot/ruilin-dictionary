@@ -5,6 +5,7 @@ Self-hosted Go + Postgres web app for managing a personal dictionary.
 ## Deployment model
 
 - `docker compose` runs two services: `app` and `db`.
+- Database migrations are embedded in the Go binary and run automatically on startup.
 - Cloudflare Tunnel stays on the homeserver host and points to `http://localhost:18080` (or your `HOST_PORT`).
 - No CI/CD is required; deploys happen directly from the repo checkout.
 
@@ -32,16 +33,9 @@ Self-hosted Go + Postgres web app for managing a personal dictionary.
    docker compose up -d --build
    ```
 
-5. Apply SQL schema (first deployment only):
+   The app applies any pending migrations on startup.
 
-   ```bash
-   ./apply_schema.sh
-   ```
-
-   Run this from the repo root and do not use `sudo`.
-   This runs Goose in a one-off Docker container and applies only `-- +goose Up` sections.
-
-6. Verify health:
+5. Verify health:
 
    ```bash
    curl -fsS http://localhost:18080/api/health
@@ -56,7 +50,7 @@ git pull
 docker compose up -d --build
 ```
 
-This rebuilds/restarts the app container while preserving Postgres data in the named volume.
+This rebuilds/restarts the app container while preserving Postgres data in the named volume. New migrations bundled with the new build are applied automatically on next start.
 
 ## Cloudflare Tunnel notes
 
@@ -64,9 +58,14 @@ This rebuilds/restarts the app container while preserving Postgres data in the n
 - Route your public hostname to `http://localhost:18080` (or your `HOST_PORT`).
 - Do not publish Postgres to public interfaces.
 
-## Migration notes
+## Migrations
 
-- Do not pipe migration files directly into `psql` if they contain Goose markers.
-- `psql` treats `-- +goose Up/Down` as comments and executes all SQL, including down migrations.
-- `./apply_schema.sh` runs `docker compose run --rm migrate`, so no host `go`/`goose` install is needed.
-- Goose records applied versions in its migration table, so reruns are safe.
+- Source files live in `internal/migrations/schema/` and use Goose's `-- +goose Up` / `-- +goose Down` format.
+- They are embedded into the binary via `go:embed` and applied with `goose.Up` at server startup.
+- To create a new migration locally:
+
+  ```bash
+  goose -dir ./internal/migrations/schema create your_migration_name sql
+  ```
+
+  After committing it, the next `docker compose up -d --build` applies it automatically.

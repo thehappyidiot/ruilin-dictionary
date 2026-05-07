@@ -13,6 +13,7 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	_ "github.com/lib/pq"
 	"github.com/thehappyidiot/ruilin-dictionary/internal/database"
+	"github.com/thehappyidiot/ruilin-dictionary/internal/migrations"
 )
 
 type Config struct {
@@ -75,6 +76,10 @@ func NewServer() *http.Server {
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
 		panic(fmt.Sprintf("cannot connect to database: %s", err))
+	}
+
+	if err := migrations.Up(db); err != nil {
+		panic(fmt.Sprintf("cannot run migrations: %s", err))
 	}
 
 	sessionStore := sessions.NewCookieStore([]byte(sessionSecret))
