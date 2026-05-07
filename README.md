@@ -39,6 +39,7 @@ Self-hosted Go + Postgres web app for managing a personal dictionary.
    ```
 
    Run this from the repo root and do not use `sudo`.
+   This uses Goose migration tracking and applies only `-- +goose Up` sections.
 
 6. Verify health:
 
@@ -62,3 +63,9 @@ This rebuilds/restarts the app container while preserving Postgres data in the n
 - Keep tunnel config on host (not in Compose).
 - Route your public hostname to `http://localhost:18080` (or your `HOST_PORT`).
 - Do not publish Postgres to public interfaces.
+
+## Migration notes
+
+- Do not pipe migration files directly into `psql` if they contain Goose markers.
+- `psql` treats `-- +goose Up/Down` as comments and executes all SQL, including down migrations.
+- `./apply_schema.sh` runs Goose properly and records versions in the migration table.
