@@ -109,6 +109,7 @@ header {
     border-radius: 999px;
     cursor: pointer;
     transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
 }
 
 .search-btn:hover  { background: var(--teal-dk); }
@@ -243,6 +244,10 @@ main {
 .actions {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    width: 100%;
+    max-width: 680px;
 }
 
 .random-btn {
@@ -382,25 +387,91 @@ main {
     resize: vertical;
 }
 
+.admin-form .search-btn {
+    align-self: flex-start;
+}
+
 .error-text {
     color: var(--coral-dk);
     font-weight: 700;
 }
 
 /* ── Responsive tweaks ───────────────────────────────────── */
-@media (max-width: 520px) {
-    header {
-        padding: 1rem 1.25rem;
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-form {
-        max-width: 100%;
+@media (max-width: 760px) {
+    main {
+        padding: 1.5rem 1rem 2.5rem;
+        gap: 1.1rem;
     }
 
     .word-card {
         padding: 1.5rem 1.25rem;
+        box-shadow: 4px 4px 0 var(--border);
         transform: none;
+    }
+
+    .search-result-item {
+        padding: 0.85rem 1rem;
+    }
+
+    .random-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 520px) {
+    header {
+        padding: 0.9rem 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .site-title {
+        text-align: center;
+    }
+
+    .search-form {
+        max-width: 100%;
+        flex-direction: column;
+    }
+
+    .search-form .search-btn,
+    .search-form .search-input {
+        width: 100%;
+    }
+
+    header > .search-btn,
+    header > form {
+        width: 100%;
+    }
+
+    header > form .search-btn {
+        width: 100%;
+    }
+
+    .word-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.45rem;
+    }
+
+    .word-title {
+        font-size: clamp(1.7rem, 8.2vw, 2.4rem);
+    }
+
+    .result-meaning {
+        white-space: normal;
+        overflow: visible;
+        text-overflow: initial;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 0.65rem;
+    }
+
+    .admin-form .search-btn {
+        width: 100%;
     }
 }

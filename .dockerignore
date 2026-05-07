@@ -1,0 +1,14 @@
+.git
+.gitignore
+.cursor
+.env
+.env.*
+*.md
+*.log
+*.out
+coverage.*
+profile.cov
+tmp/
+dist/
+bin/
+rdc
