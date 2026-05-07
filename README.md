@@ -35,10 +35,10 @@ Self-hosted Go + Postgres web app for managing a personal dictionary.
 5. Apply SQL schema (first deployment only):
 
    ```bash
-   for file in sql/schema/*.sql; do
-     docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" < "$file"
-   done
+   ./apply_schema.sh
    ```
+
+   Run this from the repo root and do not use `sudo`.
 
 6. Verify health:
 
