@@ -48,6 +48,14 @@
                 <label class="admin-label" for="origin">Origin</label>
                 <textarea class="search-input admin-input admin-textarea" id="origin" name="origin">{{.Form.Origin}}</textarea>
 
+                <label class="admin-label" for="confused_with">Not to be confused with</label>
+                <textarea
+                    class="search-input admin-input admin-textarea"
+                    id="confused_with"
+                    name="confused_with"
+                    placeholder="One word or phrase per line (or comma-separated)"
+                >{{.Form.ConfusedWithRaw}}</textarea>
+
                 <button class="search-btn" type="submit">{{.SubmitLabel}}</button>
             </form>
         </div>

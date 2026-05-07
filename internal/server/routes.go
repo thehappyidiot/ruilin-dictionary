@@ -63,7 +63,7 @@ func (server *Server) middlewareLogger(handler http.Handler) http.Handler {
 
 type WordPageData struct {
 	Word       database.Word
-	Confusions []database.Word
+	Confusions []string
 	IsAdmin    bool
 }
 
@@ -79,11 +79,13 @@ type AdminLoginPageData struct {
 }
 
 type WordFormValues struct {
-	Word     string
-	Type     string
-	Meaning  string
-	Sentence string
-	Origin   string
+	Word            string
+	Type            string
+	Meaning         string
+	Sentence        string
+	Origin          string
+	ConfusedWithRaw string
+	ConfusedWith    []string
 }
 
 type AdminWordFormPageData struct {
@@ -150,16 +152,9 @@ func (server *Server) getWord(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	confusions, err := server.dbQueries.GetWordConfusions(context.Background(), word.ID)
-	if err != nil {
-		log.Printf("getWord confusions db error: %v", err)
-		http.Error(w, INTERNAL_ERROR, http.StatusInternalServerError)
-		return
-	}
-
 	renderTemplate(w, "./frontend/index.html", WordPageData{
 		Word:       word,
-		Confusions: confusions,
+		Confusions: word.ConfusedWith,
 		IsAdmin:    server.isAdmin(req),
 	})
 }
@@ -251,11 +246,12 @@ func (server *Server) postAdminNewWord(w http.ResponseWriter, req *http.Request)
 	}
 
 	word, err := server.dbQueries.CreateWord(context.Background(), database.CreateWordParams{
-		Word:     form.Word,
-		Type:     form.Type,
-		Meaning:  form.Meaning,
-		Sentence: form.Sentence,
-		Origin:   form.Origin,
+		Word:         form.Word,
+		Type:         form.Type,
+		Meaning:      form.Meaning,
+		Sentence:     form.Sentence,
+		Origin:       form.Origin,
+		ConfusedWith: form.ConfusedWith,
 	})
 	if err != nil {
 		log.Printf("create word db error: %v", err)
@@ -290,11 +286,13 @@ func (server *Server) getAdminEditWord(w http.ResponseWriter, req *http.Request)
 		SubmitLabel:  "Update Word",
 		CSRFToken:    server.ensureCSRFToken(w, req),
 		Form: WordFormValues{
-			Word:     word.Word,
-			Type:     word.Type,
-			Meaning:  word.Meaning,
-			Sentence: word.Sentence,
-			Origin:   word.Origin,
+			Word:            word.Word,
+			Type:            word.Type,
+			Meaning:         word.Meaning,
+			Sentence:        word.Sentence,
+			Origin:          word.Origin,
+			ConfusedWithRaw: joinStringList(word.ConfusedWith),
+			ConfusedWith:    word.ConfusedWith,
 		},
 	})
 }
@@ -321,12 +319,13 @@ func (server *Server) postAdminEditWord(w http.ResponseWriter, req *http.Request
 	}
 
 	word, err := server.dbQueries.UpdateWord(context.Background(), database.UpdateWordParams{
-		ID:       int32(id),
-		Word:     form.Word,
-		Type:     form.Type,
-		Meaning:  form.Meaning,
-		Sentence: form.Sentence,
-		Origin:   form.Origin,
+		ID:           int32(id),
+		Word:         form.Word,
+		Type:         form.Type,
+		Meaning:      form.Meaning,
+		Sentence:     form.Sentence,
+		Origin:       form.Origin,
+		ConfusedWith: form.ConfusedWith,
 	})
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

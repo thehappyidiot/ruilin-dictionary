@@ -222,12 +222,15 @@ func (server *Server) requireCSRF(next http.Handler) http.Handler {
 }
 
 func parseAndValidateWordForm(req *http.Request) (WordFormValues, string) {
+	confusedWithRaw := strings.TrimSpace(req.FormValue("confused_with"))
 	form := WordFormValues{
-		Word:     strings.TrimSpace(req.FormValue("word")),
-		Type:     strings.TrimSpace(req.FormValue("type")),
-		Meaning:  strings.TrimSpace(req.FormValue("meaning")),
-		Sentence: strings.TrimSpace(req.FormValue("sentence")),
-		Origin:   strings.TrimSpace(req.FormValue("origin")),
+		Word:            strings.TrimSpace(req.FormValue("word")),
+		Type:            strings.TrimSpace(req.FormValue("type")),
+		Meaning:         strings.TrimSpace(req.FormValue("meaning")),
+		Sentence:        strings.TrimSpace(req.FormValue("sentence")),
+		Origin:          strings.TrimSpace(req.FormValue("origin")),
+		ConfusedWithRaw: confusedWithRaw,
+		ConfusedWith:    parseStringList(confusedWithRaw),
 	}
 
 	switch {
@@ -242,6 +245,35 @@ func parseAndValidateWordForm(req *http.Request) (WordFormValues, string) {
 	default:
 		return form, ""
 	}
+}
+
+func parseStringList(raw string) []string {
+	if raw == "" {
+		return []string{}
+	}
+
+	parts := strings.FieldsFunc(raw, func(r rune) bool {
+		return r == '\n' || r == ','
+	})
+
+	normalized := make([]string, 0, len(parts))
+	for _, part := range parts {
+		trimmed := strings.TrimSpace(part)
+		if trimmed == "" {
+			continue
+		}
+		normalized = append(normalized, trimmed)
+	}
+
+	return normalized
+}
+
+func joinStringList(items []string) string {
+	if len(items) == 0 {
+		return ""
+	}
+
+	return strings.Join(items, "\n")
 }
 
 func getClientIP(req *http.Request) string {

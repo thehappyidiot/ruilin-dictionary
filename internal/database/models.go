@@ -5,15 +5,11 @@
 package database
 
 type Word struct {
-	ID       int32
-	Word     string
-	Type     string
-	Meaning  string
-	Sentence string
-	Origin   string
-}
-
-type WordConfusion struct {
-	WordID         int32
-	ConfusedWithID int32
+	ID           int32
+	Word         string
+	Type         string
+	Meaning      string
+	Sentence     string
+	Origin       string
+	ConfusedWith []string
 }
