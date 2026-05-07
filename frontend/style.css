@@ -358,6 +358,35 @@ main {
     max-width: 320px;
 }
 
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.admin-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.admin-input {
+    width: 100%;
+}
+
+.admin-textarea {
+    border-radius: 14px;
+    min-height: 5.75rem;
+    resize: vertical;
+}
+
+.error-text {
+    color: var(--coral-dk);
+    font-weight: 700;
+}
+
 /* ── Responsive tweaks ───────────────────────────────────── */
 @media (max-width: 520px) {
     header {

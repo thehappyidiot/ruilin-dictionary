@@ -10,8 +10,42 @@ import (
 	"database/sql"
 )
 
+const createWord = `-- name: CreateWord :one
+INSERT INTO words (word, type, meaning, sentence, origin)
+VALUES ($1, $2, $3, $4, $5)
+RETURNING id, word, type, meaning, sentence, origin
+`
+
+type CreateWordParams struct {
+	Word     string
+	Type     string
+	Meaning  string
+	Sentence string
+	Origin   string
+}
+
+func (q *Queries) CreateWord(ctx context.Context, arg CreateWordParams) (Word, error) {
+	row := q.db.QueryRowContext(ctx, createWord,
+		arg.Word,
+		arg.Type,
+		arg.Meaning,
+		arg.Sentence,
+		arg.Origin,
+	)
+	var i Word
+	err := row.Scan(
+		&i.ID,
+		&i.Word,
+		&i.Type,
+		&i.Meaning,
+		&i.Sentence,
+		&i.Origin,
+	)
+	return i, err
+}
+
 const getRandomWord = `-- name: GetRandomWord :one
-SELECT id, word, type, meaning, sentence FROM words ORDER BY RANDOM() LIMIT 1
+SELECT id, word, type, meaning, sentence, origin FROM words ORDER BY RANDOM() LIMIT 1
 `
 
 func (q *Queries) GetRandomWord(ctx context.Context) (Word, error) {
@@ -23,12 +57,13 @@ func (q *Queries) GetRandomWord(ctx context.Context) (Word, error) {
 		&i.Type,
 		&i.Meaning,
 		&i.Sentence,
+		&i.Origin,
 	)
 	return i, err
 }
 
 const getWordByID = `-- name: GetWordByID :one
-SELECT id, word, type, meaning, sentence FROM words WHERE id = $1
+SELECT id, word, type, meaning, sentence, origin FROM words WHERE id = $1
 `
 
 func (q *Queries) GetWordByID(ctx context.Context, id int32) (Word, error) {
@@ -40,12 +75,13 @@ func (q *Queries) GetWordByID(ctx context.Context, id int32) (Word, error) {
 		&i.Type,
 		&i.Meaning,
 		&i.Sentence,
+		&i.Origin,
 	)
 	return i, err
 }
 
 const getWordConfusions = `-- name: GetWordConfusions :many
-SELECT w.id, w.word, w.type, w.meaning, w.sentence FROM words w
+SELECT w.id, w.word, w.type, w.meaning, w.sentence, w.origin FROM words w
 JOIN word_confusions wc ON w.id = wc.confused_with_id
 WHERE wc.word_id = $1
 ORDER BY w.word
@@ -66,6 +102,7 @@ func (q *Queries) GetWordConfusions(ctx context.Context, wordID int32) ([]Word, 
 			&i.Type,
 			&i.Meaning,
 			&i.Sentence,
+			&i.Origin,
 		); err != nil {
 			return nil, err
 		}
@@ -81,7 +118,7 @@ func (q *Queries) GetWordConfusions(ctx context.Context, wordID int32) ([]Word, 
 }
 
 const searchWords = `-- name: SearchWords :many
-SELECT id, word, type, meaning, sentence FROM words WHERE word ILIKE '%' || $1 || '%' ORDER BY word
+SELECT id, word, type, meaning, sentence, origin FROM words WHERE word ILIKE '%' || $1 || '%' ORDER BY word
 `
 
 func (q *Queries) SearchWords(ctx context.Context, dollar_1 sql.NullString) ([]Word, error) {
@@ -99,6 +136,7 @@ func (q *Queries) SearchWords(ctx context.Context, dollar_1 sql.NullString) ([]W
 			&i.Type,
 			&i.Meaning,
 			&i.Sentence,
+			&i.Origin,
 		); err != nil {
 			return nil, err
 		}
@@ -111,4 +149,45 @@ func (q *Queries) SearchWords(ctx context.Context, dollar_1 sql.NullString) ([]W
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateWord = `-- name: UpdateWord :one
+UPDATE words
+SET word = $2,
+    type = $3,
+    meaning = $4,
+    sentence = $5,
+    origin = $6
+WHERE id = $1
+RETURNING id, word, type, meaning, sentence, origin
+`
+
+type UpdateWordParams struct {
+	ID       int32
+	Word     string
+	Type     string
+	Meaning  string
+	Sentence string
+	Origin   string
+}
+
+func (q *Queries) UpdateWord(ctx context.Context, arg UpdateWordParams) (Word, error) {
+	row := q.db.QueryRowContext(ctx, updateWord,
+		arg.ID,
+		arg.Word,
+		arg.Type,
+		arg.Meaning,
+		arg.Sentence,
+		arg.Origin,
+	)
+	var i Word
+	err := row.Scan(
+		&i.ID,
+		&i.Word,
+		&i.Type,
+		&i.Meaning,
+		&i.Sentence,
+		&i.Origin,
+	)
+	return i, err
 }

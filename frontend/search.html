@@ -12,6 +12,11 @@
 <body>
     <header>
         <a href="/" class="site-title">Our Dictionary ✨</a>
+        {{if .IsAdmin}}
+        <a href="/admin/word/new" class="search-btn">+ Add word</a>
+        {{else}}
+        <a href="/admin" class="search-btn">Admin</a>
+        {{end}}
         <form class="search-form" action="/search" method="get">
             <input
                 class="search-input"

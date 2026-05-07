@@ -12,6 +12,11 @@
 <body>
     <header>
         <a href="/" class="site-title">Our Dictionary ✨</a>
+        {{if .IsAdmin}}
+        <a href="/admin/word/new" class="search-btn">+ Add word</a>
+        {{else}}
+        <a href="/admin" class="search-btn">Admin</a>
+        {{end}}
         <form class="search-form" action="/search" method="get">
             <input
                 class="search-input"
@@ -42,6 +47,13 @@
                 <p class="sentence-text"><span class="quote-mark">"</span>{{.Word.Sentence}}<span class="quote-mark">"</span></p>
             </section>
 
+            {{if .Word.Origin}}
+            <section class="word-section">
+                <h2 class="section-label">origin</h2>
+                <p class="meaning-text">{{.Word.Origin}}</p>
+            </section>
+            {{end}}
+
             {{if .Confusions}}
             <section class="word-section confusion-section">
                 <h2 class="section-label">not to be confused with</h2>
@@ -58,6 +70,9 @@
 
         <div class="actions">
             <a href="/random" class="random-btn">✦ Surprise me! ✦</a>
+            {{if .IsAdmin}}
+            <a href="/admin/word/{{.Word.ID}}/edit" class="random-btn">Edit this word</a>
+            {{end}}
         </div>
     </main>
 </body>

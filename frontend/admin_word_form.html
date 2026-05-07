@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{.Title}} — Our Dictionary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <header>
+        <a href="/" class="site-title">Our Dictionary ✨</a>
+        <form action="/admin/logout" method="post">
+            <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+            <button class="search-btn" type="submit">Log out</button>
+        </form>
+    </header>
+
+    <main>
+        <div class="word-card">
+            <div class="word-header">
+                <h1 class="word-title">{{.Title}}</h1>
+            </div>
+
+            {{if .Error}}
+            <section class="word-section">
+                <p class="error-text">{{.Error}}</p>
+            </section>
+            {{end}}
+
+            <form class="admin-form" action="{{.SubmitAction}}" method="post">
+                <input type="hidden" name="csrf_token" value="{{.CSRFToken}}" />
+
+                <label class="admin-label" for="word">Word</label>
+                <input class="search-input admin-input" id="word" name="word" type="text" value="{{.Form.Word}}" required />
+
+                <label class="admin-label" for="type">Type</label>
+                <input class="search-input admin-input" id="type" name="type" type="text" value="{{.Form.Type}}" required />
+
+                <label class="admin-label" for="meaning">Meaning</label>
+                <textarea class="search-input admin-input admin-textarea" id="meaning" name="meaning" required>{{.Form.Meaning}}</textarea>
+
+                <label class="admin-label" for="sentence">Sentence</label>
+                <textarea class="search-input admin-input admin-textarea" id="sentence" name="sentence" required>{{.Form.Sentence}}</textarea>
+
+                <label class="admin-label" for="origin">Origin</label>
+                <textarea class="search-input admin-input admin-textarea" id="origin" name="origin">{{.Form.Origin}}</textarea>
+
+                <button class="search-btn" type="submit">{{.SubmitLabel}}</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

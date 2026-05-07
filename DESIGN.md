@@ -9,10 +9,9 @@ This set of words changes over time.
 It would be cool to keep of track of one's own dictionary.
 It can sent as a gift, or just used as a reference.
 
-## MVP
+## Features
 - For now, it is just a webapp for one couple to keep track of their vocabulary
-- There is no login, just like dictionary.com, the user is instantly greeted with the dictionary
-- For the MVP, the words themselves can be directly loaded in the DB, a UI to inject words is not needed
+- There should be a way to enter your own words, but ONLY IF YOU'RE THE ADMIN. See security
 - Because, it's designed as a gift, it should look fun and playful. NOT professional and dull as an actual dictionary
 
 ## UI
@@ -26,7 +25,13 @@ It can sent as a gift, or just used as a reference.
   - Sentence: word used in a sentence
   - Not to be confused with: A list of similar words, hyperlinked to their page
 - A button for showing a random word
+- If you're the admin, a button to Edit the listing.
 - Upon opening, the user is greeted with a random word
+
+### Entering a word:
+- Basically the same fields as the word page, but to enter data, instead
+- Basic validation - word, type, meaning and sentence are mandatory
+- A button to submit
 
 ## Architecture
 
@@ -48,5 +53,10 @@ It can sent as a gift, or just used as a reference.
 - Running on a self hosted server via Docker container
 - Distributed through cloudflare tunnels
 
-
-
+### Admin Verification / Security
+- Store a hash in the environment variables
+- If a user goes to /admin, ask for the password, compare it against the hash
+- If successful, use gorilla session cookies to know that the user is admin
+- If not, simply reject password
+- Then, whatever functionality is available to the admin can be opened up
+- ALWAYS verify any admin request on the backend.

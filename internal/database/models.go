@@ -10,6 +10,7 @@ type Word struct {
 	Type     string
 	Meaning  string
 	Sentence string
+	Origin   string
 }
 
 type WordConfusion struct {
