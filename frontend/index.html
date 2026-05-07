@@ -1,8 +1,64 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <link rel="stylesheet" href="style.css" />
-    </head>
-    <body>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Dictionary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <header>
+        <a href="/" class="site-title">Our Dictionary ✨</a>
+        <form class="search-form" action="/search" method="get">
+            <input
+                class="search-input"
+                type="search"
+                name="q"
+                placeholder="Search a word..."
+                autocomplete="off"
+                autofocus
+            />
+            <button class="search-btn" type="submit">Go!</button>
+        </form>
+    </header>
+
+    <main>
+        <div class="word-card">
+            <div class="word-header">
+                <h1 class="word-title">{{.Word.Word}}</h1>
+                <span class="word-type">{{.Word.Type}}</span>
+            </div>
+
+            <section class="word-section meaning-section">
+                <h2 class="section-label">meaning</h2>
+                <p class="meaning-text">{{.Word.Meaning}}</p>
+            </section>
+
+            <section class="word-section sentence-section">
+                <h2 class="section-label">in a sentence</h2>
+                <p class="sentence-text"><span class="quote-mark">"</span>{{.Word.Sentence}}<span class="quote-mark">"</span></p>
+            </section>
+
+            {{if .Confusions}}
+            <section class="word-section confusion-section">
+                <h2 class="section-label">not to be confused with</h2>
+                <ul class="confusion-list">
+                    {{range .Confusions}}
+                    <li>
+                        <a href="/word/{{.ID}}" class="confusion-link">{{.Word}}</a>
+                    </li>
+                    {{end}}
+                </ul>
+            </section>
+            {{end}}
+        </div>
+
+        <div class="actions">
+            <a href="/random" class="random-btn">✦ Surprise me! ✦</a>
+        </div>
+    </main>
+</body>
 </html>

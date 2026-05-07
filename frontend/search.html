@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search — Our Dictionary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <header>
+        <a href="/" class="site-title">Our Dictionary ✨</a>
+        <form class="search-form" action="/search" method="get">
+            <input
+                class="search-input"
+                type="search"
+                name="q"
+                value="{{.Query}}"
+                placeholder="Search a word..."
+                autocomplete="off"
+                autofocus
+            />
+            <button class="search-btn" type="submit">Go!</button>
+        </form>
+    </header>
+
+    <main>
+        {{if .Query}}
+            {{if .Results}}
+            <p class="search-meta">Results for <strong>"{{.Query}}"</strong></p>
+            <ul class="search-results">
+                {{range .Results}}
+                <li>
+                    <a href="/word/{{.ID}}" class="search-result-item">
+                        <span class="result-word">{{.Word}}</span>
+                        <span class="result-type">{{.Type}}</span>
+                        <span class="result-meaning">{{.Meaning}}</span>
+                    </a>
+                </li>
+                {{end}}
+            </ul>
+            {{else}}
+            <div class="empty-state">
+                <p class="empty-emoji">🔍</p>
+                <p class="empty-text">No words found for <strong>"{{.Query}}"</strong>.</p>
+                <a href="/random" class="random-btn">✦ Surprise me! ✦</a>
+            </div>
+            {{end}}
+        {{else}}
+        <div class="empty-state">
+            <p class="empty-emoji">📖</p>
+            <p class="empty-text">Type something to search the dictionary.</p>
+        </div>
+        {{end}}
+    </main>
+</body>
+</html>
